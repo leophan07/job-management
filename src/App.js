@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { findIndex, filter, orderBy } from 'lodash';
 import './App.css';
 import TaskForm from './components/TaskForm';
 import TaskControl from './components/TaskControl';
@@ -12,7 +13,7 @@ class App extends Component {
       tasks: [],
       isDisplayForm: false,
       taskEditing: '',
-      filter: {
+      search: {
         name: '',
         status: -1
       },
@@ -66,7 +67,9 @@ class App extends Component {
 
   onUpdateStatus = (id) => {
     var {tasks} = this.state;
-    var index = this.findIndex(id);
+    var index = findIndex(tasks, (task) => {
+      return task.id === id;
+    });
     if (index !== -1) {
       tasks[index].status = !tasks[index].status;
       this.setState({
@@ -102,7 +105,7 @@ class App extends Component {
   onFilter = (filterName, filterStatus) => {
     filterStatus = parseInt(filterStatus, 10);
     this.setState({
-      filter: {
+      search: {
         name: filterName.toLowerCase(),
         status: filterStatus
       }
@@ -150,44 +153,49 @@ class App extends Component {
   }
   
   render() {
-    var { tasks, isDisplayForm, taskEditing, filter, keyword, sort } = this.state;
+    var { tasks, isDisplayForm, taskEditing, search, keyword, sort } = this.state;
 
     //search table
-    if (filter) {
-      if (filter.name) {
+    if (search) {
+      if (search.name) {
         tasks = tasks.filter(task => {
-          return task.name.toLowerCase().indexOf(filter.name) !== -1;
+          return task.name.toLowerCase().indexOf(search.name) !== -1;
         });
       }
       tasks = tasks.filter(task => {
-        if (filter.status === -1) {
+        if (search.status === -1) {
           return task;
         } else {
-          return task.status === (filter.status === 1 ? true : false);
+          return task.status === (search.status === 1 ? true : false);
         }
       });
     }
 
     //search global
     if (keyword) {
-      tasks = tasks.filter(task => {
-        return task.name.toLowerCase().indexOf(keyword) !== -1;
+      // tasks = tasks.filter(task => {
+      //   return task.name.toLowerCase().indexOf(keyword) !== -1;
+      // });
+      tasks = filter(tasks, (task) => {
+        return task.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
       });
     }
 
     //sort
     if (sort.by === 'name') {
-      tasks.sort((a, b) => {
-        if (a.name > b.name) return sort.value;
-        else if (a.name < b.name) return -sort.value;
-        else return 0;
-      });
+      // tasks.sort((a, b) => {
+      //   if (a.name > b.name) return sort.value;
+      //   else if (a.name < b.name) return -sort.value;
+      //   else return 0;
+      // });
+      tasks = orderBy(tasks, ['name'], [sort.value === 1 ? 'asc' : 'desc']);
     } else {
-      tasks.sort((a, b) => {
-        if (a.status > b.status) return -sort.value;
-        else if (a.status < b.status) return sort.value;
-        else return 0;
-      });
+      // tasks.sort((a, b) => {
+      //   if (a.status > b.status) return -sort.value;
+      //   else if (a.status < b.status) return sort.value;
+      //   else return 0;
+      // });
+      tasks = orderBy(tasks, ['status'], [sort.value === -1 ? 'asc' : 'desc']);
     }
 
     const elmForm = isDisplayForm ? 
