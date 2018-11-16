@@ -55,6 +55,7 @@ class App extends Component {
       tasks.push(task);
     } else {
       var index = this.findIndex(data.id);
+      data.status = data.status === 'true' ? true : false;
       tasks[index] = data;
     }
     
