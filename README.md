@@ -1,3 +1,10 @@
+This is a basic project to manage your work.
+
+Link demo:
+
+http://jobreact.freevnn.com
+https://job-management.herokuapp.com
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
